@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Todo;
 use Illuminate\Console\Command;
 
-class Todo extends Command
+class TodoC extends Command
 {
     /**
      * The name and signature of the console command.
