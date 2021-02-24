@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - "8080:80"
+      - "8081:81"
+    volumes:
+      - ./todobackend:/var/www/api
+      - ./todo:/var/www/client
+      - ./docker/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+
+  nuxt:
+    container_name: nuxt
+    build:
+      context: ./docker/nuxt
+      dockerfile: Dockerfile
+    volumes:
+      - ./todo:/var/www/client
+
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_USER: test
+      MYSQL_ROOT_PASSWORD: "test123"
+      MYSQL_DATABASE: todo
+
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: php
+    volumes:
+      - ./todobackend:/var/www/api
+    depends_on:
+      - mysql
+
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080
